@@ -1,3 +1,27 @@
-export class DataStore{
-
+// 数据储存器
+export class DataStore {
+	static getInstance() {
+		if (!DataStore.instance) {
+			DataStore.instance = new DataStore();
+		}
+		return DataStore.instance;
+	}
+	constructor() {
+		this.map = new Map();
+	}
+	put(key, value) {
+		if(typeof value === "function"){
+			value = new value()
+		}
+		this.map.set(key, value);
+		return this;
+	}
+	get(key, value) {
+		return this.map.get(key, value);
+	}
+	destory() {
+		for (let value of this.map.values()) {
+			value = null;
+		}
+	}
 }

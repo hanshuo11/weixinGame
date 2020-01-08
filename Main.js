@@ -1,21 +1,25 @@
-import { ResourceLoader } from './js/base/ResourceLoader';
-import { Director } from './js/Director';
+import { ResourceLoader } from './js/base/ResourceLoader.js';
+import { Director } from './js/Director.js';
+import { BackGround } from './js/runTime/BackGround.js';
+import { DataStore } from './js/base/DataStore.js';
 
 export class Main {
 	constructor() {
 		this.canvas = wx.createCanvas();
 		this.ctx = this.canvas.getContext('2d');
+		// dataStore创建
+		this.dataStore = DataStore.getInstance();
 		const loader = ResourceLoader.create();
-        loader.onLoaded((map) => this.fristResourceLoader(map));
-        // 渲染背景
-		let image = wx.createImage();
-		image.src = './res/background.png';
-		image.onload = () => {
-			this.ctx.drawImage(image, 0, 0, image.width, image.height, 0, 0, image.width, image.height);
-		};
-		// Director.getInstance();
+		loader.onLoaded((map) => this.onResourceLoader(map));
 	}
-	fristResourceLoader(map) {
-		console.log('%cmap: ', 'color: MidnightBlue; background: Aquamarine; font-size: 20px;', map);
+	onResourceLoader(map) {
+		// 随时销毁的放到DataStore的map中，长久保存的放入到DataStore的原型链中
+		this.dataStore.ctx = this.ctx;
+		this.dataStore.res = map;
+		this.init();
+	}
+	init() {
+		this.dataStore.put('background',BackGround);
+		Director.getInstance().run();
 	}
 }
